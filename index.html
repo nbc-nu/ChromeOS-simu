@@ -3,23 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChromeOS Desktop</title>
+    <title>ChromeOS VM</title>
     <style>
         * { box-sizing: border-box; }
         body {
             margin: 0; padding: 0;
             font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            /* Fundo alterado para azul-claro */
             background: #8ec5fc;
             background-image: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
             height: 100vh; display: flex; flex-direction: column; overflow: hidden; user-select: none;
         }
         #desktop { flex: 1; position: relative; width: 100%; }
+        
+        /* Estilo padrão da Janela (Tamanho Normal) */
         .window-container {
-            position: absolute; top: 40px; left: 40px; right: 40px; bottom: 80px;
+            position: absolute; 
+            top: 40px; left: 40px; right: 40px; bottom: 80px;
             background: #fff; border-radius: 8px; box-shadow: 0 12px 35px rgba(0,0,0,0.15);
             display: none; flex-direction: column; overflow: hidden; border: 1px solid #cfd8dc;
+            transition: top 0.15s, left 0.15s, right 0.15s, bottom 0.15s, border-radius 0.15s;
         }
+
+        /* Classe aplicada via JavaScript ao ativar o Fullscreen */
+        .window-container.fullscreen {
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            border-radius: 0 !important;
+            border: none !important;
+        }
+
         .window-header {
             background: #f1f3f4; padding: 0 16px; height: 44px;
             display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e0e0e0;
@@ -34,6 +48,7 @@
         .control-btn svg { width: 14px; height: 14px; fill: #5f6368; }
         .window-content { width: 100%; height: calc(100% - 44px); background: #fff; overflow: auto; }
         iframe { width: 100%; height: 100%; border: none; }
+        
         .file-browser { padding: 24px; font-family: sans-serif; color: #202124; }
         .file-browser h1 { font-size: 22px; font-weight: normal; margin: 0 0 16px 0; border-bottom: 1px solid #e8eaed; padding-bottom: 12px; }
         .file-table { width: 100%; border-collapse: collapse; }
@@ -43,7 +58,6 @@
         .file-table a { color: #1a73e8; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
         .file-table a:hover { text-decoration: underline; }
         
-        /* Barra de Tarefas (Shelf) alterada para claro/branco */
         #shelf {
             height: 56px; 
             background: rgba(255, 255, 255, 0.85);
@@ -55,8 +69,6 @@
         }
         .shelf-icons { display: flex; gap: 16px; align-items: center; }
         .app-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s; border-radius: 50%; }
-        
-        /* Hover adaptado para a barra clara */
         .app-icon:hover { transform: scale(1.1); background: rgba(0, 0, 0, 0.05); }
         .app-icon svg, .app-icon img { width: 32px; height: 32px; object-fit: contain; }
     </style>
@@ -67,12 +79,13 @@
         <!-- Janela do Google Chrome -->
         <div id="win-chrome" class="window-container">
             <div class="window-header">
-                <span class="window-title">Google</span>
+                <span class="window-title">Chrome</span>
                 <div class="window-controls">
                     <button class="control-btn" onclick="fecharJanela('win-chrome')">
                         <svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg>
                     </button>
-                    <button class="control-btn" onclick="abrirJanela('win-chrome')">
+                    <!-- Botão de Fullscreen Ativo -->
+                    <button class="control-btn" onclick="toggleFullscreen('win-chrome')">
                         <svg viewBox="0 0 24 24"><path d="M18 4H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H6V6h12v12z"/></svg>
                     </button>
                     <button class="control-btn" onclick="fecharJanela('win-chrome')">
@@ -81,7 +94,7 @@
                 </div>
             </div>
             <div class="window-content">
-                <iframe src="https://www.google.com/search?igu=1"></iframe>
+                <iframe src="https://www.google.com/webhp?igu=1"></iframe>
             </div>
         </div>
 
@@ -93,7 +106,8 @@
                     <button class="control-btn" onclick="fecharJanela('win-arquivos')">
                         <svg viewBox="0 0 24 24"><path d="M19 13H5v-2h14v2z"/></svg>
                     </button>
-                    <button class="control-btn" onclick="abrirJanela('win-arquivos')">
+                    <!-- Botão de Fullscreen Ativo -->
+                    <button class="control-btn" onclick="toggleFullscreen('win-arquivos')">
                         <svg viewBox="0 0 24 24"><path d="M18 4H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H6V6h12v12z"/></svg>
                     </button>
                     <button class="control-btn" onclick="fecharJanela('win-arquivos')">
@@ -103,18 +117,17 @@
             </div>
             <div class="window-content">
                 <div class="file-browser">
-                    <h1>Índice de C:/</h1>
+                    <h1>Files</h1>
                     <table class="file-table">
                         <thead>
-                            <tr><th>Nome</th><th>Tamanho</th><th>Última Modificação</th></tr>
+                            <tr><th>Name</th><th>KB</th><th>Last Modification</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td><a href="#">📁 .. (Diretório pai)</a></td><td>-</td><td>-</td></tr>
-                            <tr><td><a href="#">📁 Arquivos de Programas</a></td><td>-</td><td>12/05/2026 14:22</td></tr>
-                            <tr><td><a href="#">📁 Arquivos de Programas (x86)</a></td><td>-</td><td>12/05/2026 14:25</td></tr>
-                            <tr><td><a href="#">📁 Usuários (Users)</a></td><td>-</td><td>10/10/2026 11:30</td></tr>
-                            <tr><td><a href="#">📁 Windows</a></td><td>-</td><td>09/10/2026 18:45</td></tr>
-                            <tr><td><a href="#">📄 log.txt</a></td><td>1.2 KB</td><td>10/10/2026 09:12</td></tr>
+                            <tr><td><a href="#">📁 <- Back</a></td><td>-</td><td>-</td></tr>
+                            <tr><td><a href="#">📁 Programs</a></td><td>-</td><td>10/10/2026 12:16</td></tr>
+                            <tr><td><a href="#">📁 Chrome</a></td><td>-</td><td>10/10/2026 12:16</td></tr>
+                            <tr><td><a href="#">📁 Notes</a></td><td>-</td><td>10/10/2026 12:15</td></tr>
+                            <tr><td><a href="#">📁 OS</a></td><td>-</td><td>10/10/2026 12:15</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -122,20 +135,18 @@
         </div>
     </div>
 
-    <!-- Barra de Tarefas Inferior -->
+
     <div id="shelf">
         <div class="shelf-icons">
-            <!-- Launcher Circular Menu (Cinza escuro para contrastar no fundo branco) -->
             <div class="app-icon" style="background: rgba(0,0,0,0.06);">
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="#5f6368"/></svg>
             </div>
             
-            <!-- Link da Imagem Oficial do Chrome -->
+
             <div class="app-icon" onclick="abrirJanela('win-chrome')">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/Google_Chrome_icon_%28February_2022%29.svg?utm_source=pt.wikipedia.org&utm_campaign=index&utm_content=original" alt="Chrome">
             </div>
             
-            <!-- Explorador de Arquivos -->
             <div class="app-icon" onclick="abrirJanela('win-arquivos')">
                 <svg viewBox="0 0 24 24">
                     <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" fill="#42a5f5"/>
@@ -151,9 +162,17 @@
             const janela = document.getElementById(id);
             janela.style.display = 'flex';
         }
+        
         function fecharJanela(id) {
-            document.getElementById(id).style.none = 'none';
-            document.getElementById(id).style.display = 'none';
+            const janela = document.getElementById(id);
+            janela.classList.remove('fullscreen'); // Reseta se fechar em modo tela cheia
+            janela.style.display = 'none';
+        }
+
+        // Nova função para alternar o Fullscreen
+        function toggleFullscreen(id) {
+            const janela = document.getElementById(id);
+            janela.classList.toggle('fullscreen');
         }
     </script>
 </body>
