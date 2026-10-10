@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChromeOS Desktop</title>
+    <title>ChromeOS VM</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -48,7 +48,7 @@
         .shelf-icons { display: flex; gap: 16px; align-items: center; }
         .app-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s; border-radius: 50%; }
         .app-icon:hover { transform: scale(1.1); background: rgba(255, 255, 255, 0.1); }
-        .app-icon svg { width: 32px; height: 32px; }
+        .app-icon svg, .app-icon img { width: 32px; height: 32px; object-fit: contain; }
     </style>
 </head>
 <body>
@@ -71,7 +71,7 @@
                 </div>
             </div>
             <div class="window-content">
-                <iframe src="https://google.com"></iframe>
+                <iframe src="https://google.com/webph?igu=1"></iframe>
             </div>
         </div>
 
@@ -99,7 +99,7 @@
                             <tr><th>Nome</th><th>Tamanho</th><th>Última Modificação</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td><a href="#">模 .. (Diretório pai)</a></td><td>-</td><td>-</td></tr>
+                            <tr><td><a href="#">📁 .. (Diretório pai)</a></td><td>-</td><td>-</td></tr>
                             <tr><td><a href="#">📁 Arquivos de Programas</a></td><td>-</td><td>12/05/2026 14:22</td></tr>
                             <tr><td><a href="#">📁 Arquivos de Programas (x86)</a></td><td>-</td><td>12/05/2026 14:25</td></tr>
                             <tr><td><a href="#">📁 Usuários (Users)</a></td><td>-</td><td>10/10/2026 11:30</td></tr>
@@ -115,18 +115,17 @@
     <!-- Barra de Tarefas Inferior -->
     <div id="shelf">
         <div class="shelf-icons">
+            <!-- Launcher Circular Menu -->
             <div class="app-icon" style="background: rgba(255,255,255,0.15);">
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="#ffffff"/></svg>
             </div>
+            
+            <!-- Link da Imagem Oficial do Chrome Atualizada -->
             <div class="app-icon" onclick="abrirJanela('win-chrome')">
-                <svg viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" fill="#f4c20d"/>
-                    <path d="M12 2a10 10 0 0 0-7.65 3.57l3.72 6.44A4 4 0 0 1 12 8h8a10 10 0 0 0-8-6z" fill="#db3236"/>
-                    <path d="M4.35 5.57A10 10 0 0 0 12 22l3.73-6.45a4 4 0 0 1-5.38-2z" fill="#3cba54"/>
-                    <path d="M20 8a10 10 0 0 1-11.73 7.55l-3.73-6.46A4 4 0 0 1 12 8z" fill="#f4c20d"/>
-                    <circle cx="12" cy="12" r="4" fill="#ffffff"/><circle cx="12" cy="12" r="3" fill="#4885ed"/>
-                </svg>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/Google_Chrome_icon_%28February_2022%29.svg" alt="Chrome">
             </div>
+            
+            <!-- Explorador de Arquivos -->
             <div class="app-icon" onclick="abrirJanela('win-arquivos')">
                 <svg viewBox="0 0 24 24">
                     <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" fill="#42a5f5"/>
