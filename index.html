@@ -1,23 +1,45 @@
-    <div id="splash" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#d9f1ff;display:flex;justify-content:center;align-items:center;z-index:9999;transition:opacity 1s ease;opacity:1;">
-    <div style="font-family:sans-serif;font-size:24px;color:#fff;">MiniVM<br><pre>by N.U.</pre></div>
-</div>
+<!-- Primeira Tela: MiniVM -->
+<div id="splash1" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#d9f1ff;display:flex;justify-content:center;align-items:center;z-index:9999;transition:opacity 1s ease;opacity:1;"> 
+    <div style="font-family:sans-serif;font-size:24px;color:#fff;text-align:center;">
+        MiniVM<br>
+        <span style="font-size:16px; font-family:monospace;">by N.U.</span>
+    </div> 
+</div> 
+
+<!-- Segunda Tela: ChromeOS (inicia oculta com display:none) -->
+<div id="splash2" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000000;display:none;justify-content:center;align-items:center;z-index:9998;transition:opacity 1s ease;opacity:0;"> 
+    <div style="font-family:sans-serif;font-size:24px;color:#fff;">ChromeOS</div> 
+</div> 
 
 <script>
-    setTimeout(function() {
-        var s = document.getElementById('splash');
-        s.style.opacity = '0';
-        setTimeout(function() { s.style.display = 'none'; }, 1000);
-    }, 2000);
-</script>
-<div id="splash" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000000;display:flex;justify-content:center;align-items:center;z-index:9999;transition:opacity 1s ease;opacity:1;">
-    <div style="font-family:sans-serif;font-size:24px;color:#fff;">ChromeOS</div>
-</div>
+    // Seleção dos elementos corrigida
+    var s1 = document.getElementById('splash1');
+    var s2 = document.getElementById('splash2');
 
-<script>
-    setTimeout(function() {
-        var s = document.getElementById('splash');
-        s.style.opacity = '0';
-        setTimeout(function() { s.style.display = 'none'; }, 1000);
-    }, 5000);
+    // 1. Após 2 segundos, começa a sumir com o MiniVM
+    setTimeout(function() { 
+        s1.style.opacity = '0'; 
+        
+        // 2. Após 1 segundo de transição, remove o MiniVM e mostra o ChromeOS
+        setTimeout(function() { 
+            s1.style.display = 'none'; 
+            s2.style.display = 'flex';
+            
+            // Pequeno delay para o navegador processar o display antes de aplicar a opacidade
+            setTimeout(function() {
+                s2.style.opacity = '1';
+            }, 50);
+        }, 1000); 
+    }, 2000); 
+
+    // 3. Após 5.5 segundos no total, começa a sumir com o ChromeOS
+    setTimeout(function() { 
+        s2.style.opacity = '0'; 
+        setTimeout(function() { 
+            s2.style.display = 'none'; 
+        }, 1000); 
+    }, 5500); 
 </script>
-    <meta http-equiv="refresh" content="6;url=run.html">
+
+<!-- Redirecionamento após 7 segundos para garantir que a última animação termine -->
+<meta http-equiv="refresh" content="7;url=run.html">
