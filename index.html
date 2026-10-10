@@ -1,45 +1,49 @@
-<!-- Primeira Tela: MiniVM -->
+<!-- Primeira Tela: MiniVM (Azulada) - IMPORTANTE: z-index maior (9999) para ficar na frente -->
 <div id="splash1" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#d9f1ff;display:flex;justify-content:center;align-items:center;z-index:9999;transition:opacity 1s ease;opacity:1;"> 
     <div style="font-family:sans-serif;font-size:24px;color:#fff;text-align:center;">
         MiniVM<br>
-        <span style="font-size:16px; font-family:monospace;">by N.U.</span>
+        <span style="font-size:16px; font-family:monospace; color:#555;">by N.U.</span>
     </div> 
 </div> 
 
-<!-- Segunda Tela: ChromeOS (inicia oculta com display:none) -->
+<!-- Segunda Tela: ChromeOS (Preta) - IMPORTANTE: z-index menor (9998) e display:none para começar oculta -->
 <div id="splash2" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000000;display:none;justify-content:center;align-items:center;z-index:9998;transition:opacity 1s ease;opacity:0;"> 
     <div style="font-family:sans-serif;font-size:24px;color:#fff;">ChromeOS</div> 
 </div> 
 
 <script>
-    // Seleção dos elementos corrigida
-    var s1 = document.getElementById('splash1');
-    var s2 = document.getElementById('splash2');
+    // Função para pausar a execução
+    const esperar = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-    // 1. Após 2 segundos, começa a sumir com o MiniVM
-    setTimeout(function() { 
-        s1.style.opacity = '0'; 
+    async function rodarAnimacao() {
+        var s1 = document.getElementById('splash1');
+        var s2 = document.getElementById('splash2');
+
+        // 1. Mostra o MiniVM (Azul) por 2 segundos
+        await esperar(2000);
         
-        // 2. Após 1 segundo de transição, remove o MiniVM e mostra o ChromeOS
-        setTimeout(function() { 
-            s1.style.display = 'none'; 
-            s2.style.display = 'flex';
-            
-            // Pequeno delay para o navegador processar o display antes de aplicar a opacidade
-            setTimeout(function() {
-                s2.style.opacity = '1';
-            }, 50);
-        }, 1000); 
-    }, 2000); 
+        // 2. Faz o MiniVM sumir suavemente (leva 1 segundo)
+        s1.style.opacity = '0';
+        await esperar(1000);
+        s1.style.display = 'none'; // Remove o azul da tela
 
-    // 3. Após 5.5 segundos no total, começa a sumir com o ChromeOS
-    setTimeout(function() { 
-        s2.style.opacity = '0'; 
-        setTimeout(function() { 
-            s2.style.display = 'none'; 
-        }, 1000); 
-    }, 5500); 
+        // 3. Prepara e mostra o ChromeOS (Preto) suavemente
+        s2.style.display = 'flex';
+        await esperar(50); 
+        s2.style.opacity = '1';
+        
+        // 4. Deixa o ChromeOS na tela por 2 segundos
+        await esperar(2000);
+
+        // 5. Faz o ChromeOS sumir suavemente (leva 1 segundo)
+        s2.style.opacity = '0';
+        await esperar(1000);
+        s2.style.display = 'none';
+
+        // 6. Redireciona para o sistema
+        window.location.href = "run.html";
+    }
+
+    // Inicia assim que a página carregar
+    window.onload = rodarAnimacao;
 </script>
-
-<!-- Redirecionamento após 7 segundos para garantir que a última animação termine -->
-<meta http-equiv="refresh" content="7;url=run.html">
