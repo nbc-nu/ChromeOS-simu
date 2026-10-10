@@ -4,6 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChromeOS VM</title>
+    <script>
+// 1. Cria e injeta os estilos CSS necessários na página
+const estiloCursor = document.createElement('style');
+estiloCursor.textContent = `
+  html, body, a, button, input, select, textarea, [role="button"], [cursor="pointer"] {
+    cursor: none !important;
+  }
+  #custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 32px;
+    height: 32px;
+    background-image: url('https://android.com');
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 9999999;
+    display: none;
+    will-change: transform;
+  }
+  #custom-cursor.pointer-click {
+    background-image: url('https://android.com');
+  }
+`;
+document.head.appendChild(estiloCursor);
+
+// 2. Cria e adiciona a div do cursor no body
+const cursor = document.createElement('div');
+cursor.id = 'custom-cursor';
+document.body.appendChild(cursor);
+
+// 3. Move o elemento acompanhando as coordenadas do mouse
+document.addEventListener('mousemove', (e) => {
+  cursor.style.display = 'block';
+  cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+});
+
+// 4. Oculta o elemento quando o mouse sai da janela do navegador
+document.addEventListener('mouseleave', () => {
+  cursor.style.display = 'none';
+});
+
+// 5. Detecta elementos interativos para alternar para a mãozinha de clique
+document.addEventListener('mouseover', (e) => {
+  const target = e.target;
+  const ehClicavel = target.closest('a') || 
+                     target.closest('button') || 
+                     target.closest('input[type="submit"]') ||
+                     target.closest('input[type="button"]') ||
+                     window.getComputedStyle(target).cursor === 'pointer';
+
+  if (ehClicavel) {
+    cursor.classList.add('pointer-click');
+  } else {
+    cursor.classList.remove('pointer-click');
+  }
+});
+</script>
     <style>
         * { box-sizing: border-box; }
         body {
