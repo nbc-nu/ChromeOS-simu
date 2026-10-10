@@ -1,5 +1,5 @@
-<div id="splash" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000000;display:flex;justify-content:center;align-items:center;z-index:9999;transition:opacity 1s ease;opacity:1;">
-    <div style="font-family:sans-serif;font-size:24px;color:#fff;">ChromeOS</div>
+    <div id="splash" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#d9f1ff;display:flex;justify-content:center;align-items:center;z-index:9999;transition:opacity 1s ease;opacity:1;">
+    <div style="font-family:sans-serif;font-size:24px;color:#fff;">MiniVM<br><pre>by N.U.</pre></div>
 </div>
 
 <script>
@@ -9,3 +9,15 @@
         setTimeout(function() { s.style.display = 'none'; }, 1000);
     }, 2000);
 </script>
+<div id="splash" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000000;display:flex;justify-content:center;align-items:center;z-index:9999;transition:opacity 1s ease;opacity:1;">
+    <div style="font-family:sans-serif;font-size:24px;color:#fff;">ChromeOS</div>
+</div>
+
+<script>
+    setTimeout(function() {
+        var s = document.getElementById('splash');
+        s.style.opacity = '0';
+        setTimeout(function() { s.style.display = 'none'; }, 1000);
+    }, 5000);
+</script>
+    <meta http-equiv="refresh" content="6;url=run.html">
