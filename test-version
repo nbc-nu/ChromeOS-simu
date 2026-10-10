@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>ChromeOS Desktop</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body onclick="document.getElementById('m').style.display='none'">
+    <div id="d">
+        <!-- Launcher (Menu Iniciar) -->
+        <div id="m" onclick="event.stopPropagation()">
+            <h3 style="margin:0 0 12px 0;font-size:14px;color:#5f6368;">Aplicativos</h3>
+            <div class="grid" id="l-grid">
+                <div class="it" onclick="win('w-c')"><span style="font-size:32px;">🌐</span><span>Chrome</span></div>
+                <div class="it" onclick="win('w-f')"><span style="font-size:32px;">📁</span><span>Arquivos</span></div>
+                <div class="it" onclick="win('w-t')"><span style="font-size:32px;">💻</span><span>Terminal</span></div>
+                <div class="it" onclick="win('w-s')"><span style="font-size:32px;">🏪</span><span>PWA Builder</span></div>
+            </div>
+        </div>
+
+        <!-- Google Chrome -->
+        <div id="w-c" class="w">
+            <div class="h"><span>Google Chrome</span><div class="c"><button class="btn" onclick="cls('w-c')">—</button><button class="btn" onclick="fsk('w-c')">🗖</button><button class="btn" onclick="cls('w-c')">✕</button></div></div>
+            <div class="bar"><input type="text" class="in" id="url" value="https://google.com" onkeydown="nav(event)"></div>
+            <div class="content"><iframe id="ifr" src="https://google.com"></iframe></div>
+        </div>
+
+        <!-- Arquivos (Layout ChromeOS) -->
+        <div id="w-f" class="w">
+            <div class="h"><span>Arquivos</span><div class="c"><button class="btn" onclick="cls('w-f')">—</button><button class="btn" onclick="fsk('w-f')">🗖</button><button class="btn" onclick="cls('w-f')">✕</button></div></div>
+            <div class="content"><div class="f-app"><div class="f-side"><div style="padding:8px 20px;background:#e8f0fe;color:#1a73e8;font-weight:500;">📁 Meus arquivos</div><div style="padding:6px 35px;">Downloads</div><div style="padding:6px 35px;">Arquivos Linux</div><div style="padding:8px 20px;">☁️ Google Drive</div></div><div class="f-main"><h3>Downloads</h3><hr><p>📁 Projetos</p><p>📄 imagem.png</p></div></div></div>
+        </div>
+
+        <!-- Terminal Linux -->
+        <div id="w-t" class="w">
+            <div class="h"><span>Terminal</span><div class="c"><button class="btn" onclick="cls('w-t')">—</button><button class="btn" onclick="fsk('w-t')">🗖</button><button class="btn" onclick="cls('w-t')">✕</button></div></div>
+            <div class="content"><div class="t-body" id="t-b" onclick="document.getElementById('t-i').focus()"><div>Welcome to Crosh. Type 'help' for commands.</div><div id="t-o"></div><span>chronos@cros:~ $ </span><input type="text" id="t-i" class="t-in" onkeydown="term(event)"></div></div>
+        </div>
+
+        <!-- Criador de PWAs Customizados -->
+        <div id="w-s" class="w">
+            <div class="h"><span>PWA Custom Builder</span><div class="c"><button class="btn" onclick="cls('w-s')">—</button><button class="btn" onclick="fsk('w-s')">🗖</button><button class="btn" onclick="cls('w-s')">✕</button></div></div>
+            <div class="content"><div style="padding:24px; max-width:400px;"><h2>Instalar PWA Manual</h2>
+                <div class="form-group"><label>Nome do App:</label><input type="text" id="p-name" placeholder="Ex: YouTube"></div>
+                <div class="form-group"><label>URL do site:</label><input type="text" id="p-url" placeholder="Ex: ://youtube.com"></div>
+                <div class="form-group"><label>Emoji do Ícone:</label><input type="text" id="p-icon" placeholder="Ex: 📺 ou 💬"></div>
+                <button class="add-btn" onclick="criarApp()">Instalar Aplicativo</button>
+            </div></div>
+        </div>
+        <div id="pwas"></div>
+    </div>
+
+    <!-- Shelf (Barra Inferior Branca) -->
+    <div id="shelf">
+        <div class="s-icons" id="s-cont">
+            <div class="icon" style="background:rgba(0,0,0,0.06);" onclick="event.stopPropagation();var m=document.getElementById('m');m.style.display=(m.style.display==='flex')?'none':'flex';"><span style="font-size:18px;">⚪</span></div>
+            <div class="icon" onclick="win('w-c')"><span style="font-size:26px;">🌐</span></div>
+            <div class="icon" onclick="win('w-f')"><span style="font-size:26px;">📁</span></div>
+            <div class="icon" onclick="win('w-t')"><span style="font-size:26px;">💻</span></div>
+            <div class="icon" onclick="win('w-s')"><span style="font-size:26px;">🏪</span></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
