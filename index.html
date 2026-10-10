@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChromeOS Desktop</title>
+    <title>ChromeOS VM</title>
     <style>
         * { box-sizing: border-box; }
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
             height: 100vh;
             display: flex;
@@ -24,83 +24,143 @@
             width: 100%;
         }
 
+        /* Estrutura das Janelas */
         .window-container {
             position: absolute;
-            top: 40px;
-            left: 40px;
-            right: 40px;
+            top: 30px;
+            left: 30px;
+            right: 30px;
             bottom: 80px;
             background: #fff;
             border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
             display: none;
             flex-direction: column;
             overflow: hidden;
-            border: 1px solid #ccc;
+            border: 1px solid #bdc3c7;
         }
 
+        /* Barra Superior Corrigida */
         .window-header {
-            background: #f1f3f4;
-            padding: 10px 15px;
+            background: #dee1e6;
+            padding: 0 8px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid #dadce0;
+            border-bottom: 1px solid #cacdd1;
         }
 
         .window-title {
-            font-size: 14px;
+            font-size: 13px;
             color: #3c4043;
             font-weight: 500;
+            margin-left: 10px;
         }
 
+        /* Botões de controle no padrão correto (Minimizar, Maximizar, Fechar) */
         .window-controls {
             display: flex;
-            gap: 15px;
-            align-items: center;
+            height: 100%;
         }
 
         .control-btn {
             background: none;
             border: none;
-            font-size: 14px;
-            cursor: pointer;
+            width: 44px;
+            height: 100%;
+            font-family: "Segoe UI Symbol", sans-serif;
+            font-size: 11px;
             color: #5f6368;
-            padding: 2px 6px;
-            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.1s;
         }
+        
         .control-btn:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: rgba(0, 0, 0, 0.08);
             color: #202124;
         }
+        
         .close-btn:hover {
             background-color: #e81123;
-            color: white;
+            color: #fff;
+        }
+
+        .window-content {
+            width: 100%;
+            height: calc(100% - 40px);
+            background: #fff;
+            overflow: auto;
         }
 
         iframe {
             width: 100%;
             height: 100%;
             border: none;
-            background: #fff;
         }
 
+        /* Estilização Interna do Explorador de Arquivos */
+        .file-browser {
+            padding: 24px;
+            font-family: Arial, sans-serif;
+            color: #202124;
+        }
+        .file-browser h1 {
+            font-size: 22px;
+            font-weight: normal;
+            margin: 0 0 16px 0;
+            border-bottom: 1px solid #e8eaed;
+            padding-bottom: 12px;
+        }
+        .file-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .file-table th {
+            text-align: left;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 8px;
+            border-bottom: 1px solid #cbd5e1;
+        }
+        .file-table td {
+            padding: 10px 8px;
+            font-size: 13px;
+        }
+        .file-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .file-table a {
+            color: #1a73e8;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .file-table a:hover {
+            text-decoration: underline;
+        }
+
+        /* Barra de Tarefas Inferior */
         #shelf {
             height: 56px;
             background: rgba(32, 33, 36, 0.95);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             width: 100%;
             z-index: 9999;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid rgba(255,255,255,0.08);
         }
 
         .shelf-icons {
             display: flex;
-            gap: 20px;
+            gap: 16px;
             align-items: center;
         }
 
@@ -111,18 +171,19 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
+            transition: transform 0.15s;
             border-radius: 8px;
         }
 
         .app-icon:hover {
-            transform: scale(1.08);
-            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        .app-icon svg {
-            width: 32px;
-            height: 32px;
+        .app-icon img {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
         }
     </style>
 </head>
@@ -135,52 +196,92 @@
             <div class="window-header">
                 <span class="window-title">Google Search</span>
                 <div class="window-controls">
-                    <button class="control-btn" onclick="fecharJanela('win-chrome')">‒</button>
+                    <button class="control-btn" onclick="fecharJanela('win-chrome')">🗕</button>
                     <button class="control-btn" onclick="abrirJanela('win-chrome')">🗖</button>
                     <button class="control-btn close-btn" onclick="fecharJanela('win-chrome')">✕</button>
                 </div>
             </div>
-            <iframe src="https://google.com"></iframe>
+            <div class="window-content">
+                <iframe src="https://google.com"></iframe>
+            </div>
         </div>
 
-        <!-- Janela do Explorador de Arquivos (C:\ Corrigido) -->
+        <!-- Janela do Explorador de Arquivos (Nativo para não carregar em branco) -->
         <div id="win-arquivos" class="window-container">
             <div class="window-header">
                 <span class="window-title">Índice de C:/</span>
                 <div class="window-controls">
-                    <button class="control-btn" onclick="fecharJanela('win-arquivos')">‒</button>
+                    <button class="control-btn" onclick="fecharJanela('win-arquivos')">🗕</button>
                     <button class="control-btn" onclick="abrirJanela('win-arquivos')">🗖</button>
                     <button class="control-btn close-btn" onclick="fecharJanela('win-arquivos')">✕</button>
                 </div>
             </div>
-            <!-- Correção dos caracteres inserindo <meta charset="UTF-8"> dentro do iframe -->
-            <iframe src="data:text/html;charset=utf-8,%3C%21DOCTYPE%20html%3E%3Chtml%3E%3Chead%3E%3Cmeta%20charset%3D%22UTF-8%22%3E%3Ctitle%3E%C3%8Dndice%20de%20C%3A%2F%3E%3Cstyle%3Ebody%7Bfont-family%3Asans-serif%3Bpadding%3A20px%3Bcolor%3A%23202124%3B%7Dh1%7Bfont-size%3A1.6em%3Bborder-bottom%3A1px solid %23ccc%3Bpadding-bottom%3A10px%3Bfont-weight%3Anormal%3B%7Dtable%7Bwidth%3A100%25%3Bborder-collapse%3Acollapse%3B%7Dth%2Ctd%7Btext-align%3Aleft%3Bpadding%3A8px%3Bfont-size%3A14px%3B%7Dtr%3Anth-child%28even%29%7Bbackground%3A%23f8f9fa%3B%7Da%7Bcolor%3A%231a73e8%3Btext-decoration%3Anone%3B%7Da%3Ahover%7Btext-decoration%3Aunderline%3B%7D%3C%2Fstyle%3E%3C%2Fhead%3E%3Cbody%3E%3Ch1%3E%C3%8Dndice%20de%20C%3A%2F%3E%3Ctable%3E%3Cthead%3E%3Ctr%3E%3Cth%3ENome%3C%2Fth%3E%3Cth%3ETamanho%3C%2Fth%3E%3Cth%3E%C3%9Altima%20Modifica%C3%A7%C3%A3o%3C%2Fth%3E%3C%2Ftr%3E%3C%2thead%3E%3Ctbody%3E%3Ctr%3E%3Ctd%3E%3Ca%20href%3D%22%23%22%3E..%20%28Diret%C3%B3rio%20pai%29%3C%2Fa%3E%3C%2Ftd%3E%3Ctd%3E-%3C%2Ftd%3E%3Ctd%3E-%3C%2Ftd%3E%3C%2Ftr%3E%3Ctr%3E%3Ctd%3E%F0%9F%93%81%20%3Ca%20href%3D%22%23%22%3EArquivos%20de%20Programas%3C%2Fa%3E%3C%2Ftd%3E%3Ctd%3E-%3C%2Ftd%3E%3Ctd%3E12%2F05%2F2026%2014%3A22%3C%2Ftd%3E%3C%2Ftr%3E%3Ctr%3E%3Ctd%3E%F0%9F%93%81%20%3Ca%20href%3D%22%23%22%3EArquivos%20de%20Programas%20%28x86%29%3C%2Fa%3E%3C%2Ftd%3E%3Ctd%3E-%3C%2Ftd%3E%3Ctd%3E12%2F05%2F2026%2014%3A25%3C%2Ftd%3E%3C%2Ftr%3E%3Ctr%3E%3Ctd%3E%F0%9F%93%81%20%3Ca%20href%3D%22%23%22%3EUsu%C3%A1rios%20%28Users%29%3C%2Fa%3E%3C%2Ftd%3E%3Ctd%3E-%3C%2Ftd%3E%3Ctd%3E10%2F10%2F2026%2011%3A30%3C%2Ftd%3E%3C%2Ftr%3E%3Ctr%3E%3Ctd%3E%F0%9F%93%81%20%3Ca%20href%3D%22%23%22%3EWindows%3C%2Fa%3E%3C%2Ftd%3E%3Ctd%3E-%3C%2Ftd%3E%3Ctd%3E09%2F10%2F2026%2018%3A45%3C%2Ftd%3E%3C%2Ftr%3E%3Ctr%3E%3Ctd%3E%F0%9F%93%84%20%3Ca%20href%3D%22%23%22%3Elog.txt%3C%2Fa%3E%3C%2Ftd%3E%3Ctd%3E1.2%20KB%3C%2Ftd%3E%3Ctd%3E10%2F10%2F2026%2009%3A12%3C%2Ftd%3E%3C%2Ftr%3E%3C%2Ftbody%3E%3C%2Ftable%3E%3C%2Fbody%3E%3C%2Fhtml%3E">
-            </iframe>
+            <div class="window-content">
+                <div class="file-browser">
+                    <h1>Índice de C:/</h1>
+                    <table class="file-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Tamanho</th>
+                                <th>Última Modificação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><a href="#">📁 .. (Diretório pai)</a></td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td><a href="#">📁 Arquivos de Programas</a></td>
+                                <td>-</td>
+                                <td>12/05/2026 14:22</td>
+                            </tr>
+                            <tr>
+                                <td><a href="#">📁 Arquivos de Programas (x86)</a></td>
+                                <td>-</td>
+                                <td>12/05/2026 14:25</td>
+                            </tr>
+                            <tr>
+                                <td><a href="#">📁 Usuários (Users)</a></td>
+                                <td>-</td>
+                                <td>10/10/2026 11:30</td>
+                            </tr>
+                            <tr>
+                                <td><a href="#">📁 Windows</a></td>
+                                <td>-</td>
+                                <td>09/10/2026 18:45</td>
+                            </tr>
+                            <tr>
+                                <td><a href="#">📄 log.txt</a></td>
+                                <td>1.2 KB</td>
+                                <td>10/10/2026 09:12</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
     </div>
 
-    <!-- Barra de tarefas com SVGs incorporados (evita quebra de imagem) -->
+    <!-- Barra de Tarefas Inferior Corrigida -->
     <div id="shelf">
         <div class="shelf-icons">
             <!-- Launcher Menu -->
             <div class="app-icon" style="background: rgba(255,255,255,0.1);">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="#fff"/></svg>
+                <img src="https://wikimedia.org" alt="Launcher">
             </div>
             
-            <!-- Ícone do Chrome (SVG Renderizado) -->
+            <!-- Ícone Original do Google Chrome -->
             <div class="app-icon" onclick="abrirJanela('win-chrome')">
-                <svg viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-.34.03-.67.07-1h7.06c.4-.55.94-1 1.6-1.42l-3.53-6.11C10.2 3.17 11.08 3 12 3c4.41 0 8 3.59 8 8s-3.59 8-8 8z"/>
-                    <path fill="#EA4335" d="M12 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                </svg>
+                <img src="https://wikimedia.org" alt="Chrome">
             </div>
             
-            <!-- Ícone de Arquivos (SVG Renderizado) -->
+            <!-- Ícone do Explorador de Arquivos do ChromeOS -->
             <div class="app-icon" onclick="abrirJanela('win-arquivos')">
-                <svg viewBox="0 0 24 24" fill="#FFCA28">
-                    <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
-                </svg>
+                <img src="https://wikimedia.org" alt="Arquivos">
             </div>
         </div>
     </div>
