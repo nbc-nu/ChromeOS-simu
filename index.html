@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR" style="margin:0;padding:0;overflow:hidden;height:100%;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChromeOS Desktop</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        /* Área de trabalho onde as janelas abrem */
+        #desktop {
+            flex: 1;
+            position: relative;
+            width: 100%;
+        }
+
+        /* Estilo comum para as janelas (iframes) */
+        .window-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 70px; /* Espaço para a barra inferior */
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #ccc;
+        }
+
+        .window-header {
+            background: #f1f3f4;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #chchch;
+        }
+
+        .window-title {
+            font-size: 14px;
+            color: #3c4043;
+            font-weight: 500;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: #5f6368;
+            padding: 0 5px;
+        }
+        .close-btn:hover { color: #000; }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #fff;
+        }
+
+        /* Barra de Tarefas Inferior (ChromeOS Shelf) */
+        #shelf {
+            height: 56px;
+            background: rgba(20, 20, 25, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            z-index: 9999;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .shelf-icons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .app-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            border-radius: 50%;
+        }
+
+        .app-icon:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .app-icon img {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Área de Trabalho -->
+    <div id="desktop">
+        
+        <!-- Janela do Google Chrome -->
+        <div id="win-chrome" class="window-container">
+            <div class="window-header">
+                <span class="window-title">Google Search</span>
+                <button class="close-btn" onclick="fecharJanela('win-chrome')">✕</button>
+            </div>
+            <iframe src="https://www.google.com/search?igu=1"></iframe>
+        </div>
+
+        <!-- Janela do Explorador de Arquivos (C:\ Simulado) -->
+        <div id="win-arquivos" class="window-container">
+            <div class="window-header">
+                <span class="window-title">Índice de C:/</span>
+                <button class="close-btn" onclick="fecharJanela('win-arquivos')">✕</button>
+            </div>
+            <!-- Gerando visual idêntico ao C:/ do navegador via data: URI -->
+            <iframe src="data:text/html,
+            <html>
+            <head><title>Índice de C:/</title><style>body{font-family:sans-serif;padding:20px;}h1{font-size:1.6em;border-bottom:1px solid %23ccc;padding-bottom:10px;}table{width:100%;border-collapse:collapse;}th,td{text-align:left;padding:8px;}tr:nth-child(even){background:%23f2f2f2;}a{color:%230066cc;text-decoration:none;}a:hover{text-decoration:underline;}</style></head>
+            <body>
+                <h1>Índice de C:/</h1>
+                <table>
+                    <thead><tr><th>Nome</th><th>Tamanho</th><th>Última Modificação</th></tr></thead>
+                    <tbody>
+                        <tr><td><a href='%23'>.. (Diretório pai)</a></td><td>-</td><td>-</td></tr>
+                        <tr><td><a href='%23'>📁 Arquivos de Programas</a></td><td>-</td><td>12/05/2026 14:22</td></tr>
+                        <tr><td><a href='%23'>📁 Arquivos de Programas (x86)</a></td><td>-</td><td>12/05/2026 14:25</td></tr>
+                        <tr><td><a href='%23'>📁 Usuários (Users)</a></td><td>-</td><td>10/10/2026 11:30</td></tr>
+                        <tr><td><a href='%23'>📁 Windows</a></td><td>-</td><td>09/10/2026 18:45</td></tr>
+                        <tr><td><a href='%23'>📄 log.txt</a></td><td>1.2 KB</td><td>10/10/2026 09:12</td></tr>
+                    </tbody>
+                </table>
+            </body>
+            </html>">
+            </iframe>
+        </div>
+
+    </div>
+
+    <!-- Barra de Tarefas Estilo ChromeOS -->
+    <div id="shelf">
+        <div class="shelf-icons">
+            <!-- Botão de Iniciar do ChromeOS -->
+            <div class="app-icon" style="background: rgba(255,255,255,0.15);">
+                <img src="https://wikimedia.org" alt="Launcher">
+            </div>
+            
+            <!-- Ícone do Chrome -->
+            <div class="app-icon" onclick="abrirJanela('win-chrome')">
+                <img src="https://wikimedia.org" alt="Chrome">
+            </div>
+            
+            <!-- Ícone de Arquivos -->
+            <div class="app-icon" onclick="abrirJanela('win-arquivos')">
+                <img src="https://wikimedia.org" alt="Arquivos">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function abrirJanela(id) {
+            // Oculta todas para simular o foco ou empilhamento simples
+            document.querySelectorAll('.window-container').forEach(win => win.style.display = 'none');
+            
+            // Exibe a janela selecionada
+            const janela = document.getElementById(id);
+            janela.style.display = 'flex';
+        }
+
+        function fecharJanela(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+    </script>
+</body>
+</html>
